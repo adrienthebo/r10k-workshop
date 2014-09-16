@@ -118,11 +118,20 @@ If you want to see more information about what's happening you can pass the
 So r10k has run - let's see what was done!
 
 ```
+ls environments
 ls environments/production
 cat environments/production/site/helloworld/manifests/init.pp
 ```
 
-Make a change to the production environment
+As you can see, we now have a directory called `production` with the contents of
+our `production` branch in our environments directory. `production` is the
+default environment so when Puppet tries to fetch a catalog it will use this
+environment by default.
+
+### Make a change to the production environment
+
+Now that we've successfully created the production environment, let's try making
+some changes to that environment.
 
 ```
 cd ~/r10k-workshop/src/environments/site
@@ -136,20 +145,31 @@ git commit -m "Update helloworld module to print environment"
 git push
 ```
 
-Deploy that change
+### Deploy that change
+
+We've made a change to the production branch and pushed it; when we run r10k
+it will bring those changes down to our production environment.
 
 ```
 cd ~/r10k-workshop/puppet
 r10k deploy -c r10k.yaml environment
 ```
 
-Inspect the changes
+After r10k has run we can look at the file that we changed to verify the new
+contents.
 
 ```
 cat environments/production/site/helloworld/manifests/init.pp
 ```
 
-Create a branch
+### Create a branch
+
+Making changes is all well and good, but one of the especially valuable things
+about this whole process is the ability to rapidly create new environments and
+deploy changes in isolation. As was shown earlier, creating a Git branch called
+`production` in Git created a corresponding Puppet environment. Just as easily
+as we made the production environment, we can make a new Git branch that will be
+isolated from the production branch.
 
 ```
 cd ~/r10k-workshop/src/environments
@@ -165,14 +185,26 @@ git commit -m "Update helloworld module for ashpool test environment"
 git push -u origin ashpool_test
 ```
 
-Run r10k to deploy the ashpool_test environment
+### Run r10k to deploy the ashpool_test environment
+
+We've created a new branch and pushed it to the remote, let's run r10k to
+actually get that code in our environments directory.
+
+In this example we're calling `r10k deploy environment` with an argument -- the
+name of the environment we want to deploy. If you invoke this command with no
+arguments then all environments will be deployed; if you pass one or more
+environment names then only those will be deployed. This allows us to deploy
+exactly what we want, so we don't have to deploy every environment when we only
+care about a single environment.
 
 ```
 cd ~/r10k-workshop/puppet
 r10k deploy -c r10k.yaml environment ashpool_test
 ```
 
-Inspect your new environment
+### Inspect your new environment
+
+So we've run r10k, let's inspect the aftermath.
 
 ```
 ls environments
@@ -180,7 +212,15 @@ ls environments/ashpool_test
 cat environments/ashpool_test/site/helloworld/manifests/init.pp
 ```
 
-Merge that environment into production
+Huzzah! We now have two environments, each with their own version of the
+`helloworld` module.
+
+### Merge ashpool_test
+
+On the 'ashpool_test' environment we made a snazzy change that will
+automatically notify us of the environment being use, and we want to bring that
+into production. We can use `git merge` to bring the changes made in
+ashpool_test into the production branch.
 
 ```
 cd ~/r10k-workshop/src/environments
@@ -189,20 +229,41 @@ git merge ashpool_test
 git push
 ```
 
-Run r10k to deploy the production environment
+### Aside: automating r10k
+
+You're probably sensing a trend that every time we make a change to Git, we need
+to run r10k. There are many ways to automate the execution of r10k automatically
+when changes are pushed to a Git repository, including a variety of post-receive
+hooks. For this workshop we're going to keep things simple and just run r10k by
+hand but know there are options available for automating this. In addition there
+will be a presentation on more advanced r10k workflows later today, be sure to
+check it out!
+
+### Run r10k to deploy the production environment
+
+Let's run through the deploy/verify process to confirm that the merge actually
+added the changes to the production environment.
+
+Deploy:
 
 ```
 cd ~/r10k-workshop/puppet
 r10k deploy -c r10k.yaml environment production
 ```
 
-Inspect your new environment
+And inspect:
 
 ```
 cat environments/production/site/helloworld/manifests/init.pp
 ```
 
-Delete the old environment
+Success!
+
+### Delete the old environment
+
+All of the changes made to the ashpool_test environment are now in production so
+we no longer need that branch. We can delete the branch from our working Git
+repository and the remote repository.
 
 ```
 cd ~/r10k-workshop/src/environments
@@ -210,15 +271,19 @@ git push origin :ashpool_test
 git branch -d ashpool_test
 ```
 
-Run r10k to clean up the old ashpool_test environment
+Once it's been deleted we can run r10k and it will automatically delete any
+environments that are no longer in Git.
 
 ```
 cd ~/r10k-workshop/puppet
 r10k deploy -c r10k.yaml environment
 ```
 
-Check that the ashpool_test environment has been removed
+And for the sake of thoroughness, we can verify that the ashpool_test
+environment is actually gone.
 
 ```
 ls environments
 ```
+
+One environment, just as expected.
