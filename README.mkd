@@ -61,8 +61,8 @@ cd ~/r10k-workshop
 cat > puppet/r10k.yaml <<EOD
 sources:
   control:
-    basedir: $(pwd)/puppet/r10k-workshop/puppet/environments
-    remote: $(pwd)/git/r10k-workshop/git/environments.git
+    basedir: $(pwd)/puppet/environments
+    remote: $(pwd)/git/environments.git
 EOD
 cd puppet
 mkdir environments
@@ -79,4 +79,105 @@ Inspect your new environment
 ```
 ls environments/production
 cat environments/production/site/helloworld/manifests/init.pp
+```
+
+Make a change to the production environment
+
+```
+cd ~/r10k-workshop/src/environments/site
+cat > helloworld/manifests/init.pp <<EOD
+class helloworld {
+  notify { "Hello world!": message => "I am in the production environment"}
+}
+EOD
+git add helloworld/manifests/init.pp
+git commit -m "Update helloworld module to print environment"
+git push
+```
+
+Deploy that change
+
+```
+cd ~/r10k-workshop/puppet
+r10k deploy -c r10k.yaml environment
+```
+
+Inspect the changes
+
+```
+cat environments/production/site/helloworld/manifests/init.pp
+```
+
+Create a branch
+
+```
+cd ~/r10k-workshop/src/environments
+git checkout -b weyland_test
+cd site
+cat > helloworld/manifests/init.pp <<EOD
+class helloworld {
+  notify { "Hello world!": message => "I am in the \${environment} environment"}
+}
+EOD
+git add helloworld/manifests/init.pp
+git commit -m "Update helloworld module for weyland test environment"
+git push -u origin weyland_test
+```
+
+Run r10k to deploy the weyland_test environment
+
+```
+cd ~/r10k-workshop/puppet
+r10k deploy -c r10k.yaml environment weyland_test
+```
+
+Inspect your new environment
+
+```
+ls environments
+ls environments/weyland_test
+cat environments/weyland_test/site/helloworld/manifests/init.pp
+```
+
+Merge that environment into production
+
+```
+cd ~/r10k-workshop/src/environments
+git checkout production
+git merge weyland_test
+git push
+```
+
+Run r10k to deploy the production environment
+
+```
+cd ~/r10k-workshop/puppet
+r10k deploy -c r10k.yaml environment production
+```
+
+Inspect your new environment
+
+```
+cat environments/production/site/helloworld/manifests/init.pp
+```
+
+Delete the old environment
+
+```
+cd ~/r10k-workshop/src/environments
+git push origin :weyland_test
+git branch -d weyland_test
+```
+
+Run r10k to clean up the old weyland_test environment
+
+```
+cd ~/r10k-workshop/puppet
+r10k deploy -c r10k.yaml environment
+```
+
+Check that the weyland_test environment has been removed
+
+```
+ls environments
 ```
