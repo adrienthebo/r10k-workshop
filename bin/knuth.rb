@@ -1,20 +1,13 @@
 #!/usr/bin/env ruby
 
-require 'kramdown'
+$LOAD_PATH << File.expand_path("../../lib", __FILE__)
 
-doc = Kramdown::Document.new(File.read(ARGV[0]))
+require 'literate-markdown'
 
-sections = doc.root.children.select { |c| c.type == :p }
+if ARGV.count != 1
+  $stderr.puts "Usage: #{File.basename($0)} file-to-convert.mkd"
+  exit 1
+end
 
-text = sections.map { |c| c.children }.flatten.map do |c|
-  case c.type
-  when :text
-    "\n# #{c.value}\n"
-  when :codespan
-    c.value
-  else
-    c.value
-  end
-end.join
-
-puts text
+doc = Literate::Markdown.new(ARGV[0])
+puts doc.code
