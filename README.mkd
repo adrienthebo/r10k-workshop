@@ -1,15 +1,27 @@
 Puppetconf 2014 r10k workshop
 ===
 
-Set up a working directory
+### Set up a working directory
+
+We're going to set up a temporary working directory for this workshop. We'll
+have a few directories for this: `src`, for the source code that we'll be editing,
+git, to emulate a workflow with a remote Git server, and puppet, where we'll be
+actually deploying our Puppet code.
 
 ```
 mkdir ~/r10k-workshop
 cd ~/r10k-workshop
 mkdir src git puppet
+mkdir puppet/environments
 ```
 
-Prepare a git repository for your Puppet environments
+### Prepare a git repository for your Puppet environments
+
+The vast majority of workflows with r10k rely on having some sort of central Git
+server. Services like GitHub, Bitbucket, and so forth are common but we want to
+avoid relying on the network for this workshop. To get around this we create a
+bare git repository that will behave like we're pushing to a remote Git server.
+
 
 ```
 cd git
@@ -17,7 +29,11 @@ git init --bare environments.git
 cd ..
 ```
 
-Check out a working copy of your environments
+### Check out a working copy of your environments
+
+Now that we're created a central repository for our Puppet environments, we can
+now clone it and start working with it.
+
 
 ```
 cd src
@@ -25,7 +41,14 @@ git clone ~/r10k-workshop/git/environments.git
 cd environments
 ```
 
-Prepare your environment
+### Prepare your environment
+
+In order to make things a bit more simple later in the workshop we're going to
+change the default modulepath for our environments. Instead of putting our
+modules in the standard `modules` directory we'll put them in `site`. In
+addition we want a 1:1 relationship between Git branches and Puppet environments
+so we're going to rename our branch to "production". When that's done we can
+push the initial code to our "central" git repository.
 
 ```
 cat > environment.conf <<EOD
@@ -37,7 +60,11 @@ git branch -m production
 git push -u origin production
 ```
 
-Create a module
+### Create a module
+
+Now that we have an environment configured how we want it, we need to start
+populating it with content. We'll use `puppet module generate` to scaffold out a
+new module and add our own `init.pp` with some simple content.
 
 ```
 mkdir site
@@ -54,7 +81,12 @@ git commit -m "Add helloworld module"
 git push
 ```
 
-Set up r10k
+### Set up r10k
+
+So r10k is what this demo is all about, but we need to do a little bit of setup
+beforehand. We need to tell r10k where to retrieve our environments and where to
+put it. All this information is kept in `r10k.yaml`, so we'll fill out that
+configuration file and use it from here on out.
 
 ```
 cd ~/r10k-workshop
@@ -64,17 +96,26 @@ sources:
     basedir: $(pwd)/puppet/environments
     remote: $(pwd)/git/environments.git
 EOD
-cd puppet
-mkdir environments
 ```
 
-Run r10k to deploy your brand new environment
+### Run r10k to deploy your brand new environment
+
+So r10k is configured and we have our code in Git, all we need to do is actually
+run r10k.
 
 ```
+cd ~/r10k-workshop/puppet
 r10k deploy -c r10k.yaml environment
 ```
 
-Inspect your new environment
+By default r10k only prints messages that are of level WARN or greater, so if
+you don't see anything printed then that probably means that everything is okay.
+If you want to see more information about what's happening you can pass the
+`--verbose` flag to get more information
+
+### Inspect your new environment
+
+So r10k has run - let's see what was done!
 
 ```
 ls environments/production
