@@ -30,20 +30,39 @@ module Literate
     private
 
     def header(element)
-      element.children.first.value
+      if @text == :keep
+        "#{@comment} h#{element.options[:level]}. " + element.children.first.value + "\n\n"
+      else
+        ''
+      end
     end
 
     def p(element)
-      element.children.map do |c|
+      istext = false
+      text = element.children.map do |c|
         case c.type
         when :text
-          "\n#{@comment} #{c.value}\n" if @text == :keep
+          istext = true
+          c.value
         when :codespan
           c.value
+        when :smart_quote
+          istext = true
+          "'"
         else
           c.value
         end
-      end.join
+      end.join('') + "\n"
+
+      if istext
+        if @text == :keep
+          text.gsub(/^/, "#{@comment} ")
+        else
+          ''
+        end
+      else
+        text
+      end
     end
   end
 end
