@@ -1,2 +1,82 @@
 Puppetconf 2014 r10k workshop
 ===
+
+Set up a working directory
+
+```
+mkdir ~/r10k-workshop
+cd ~/r10k-workshop
+mkdir src git puppet
+```
+
+Prepare a git repository for your Puppet environments
+
+```
+cd git
+git init --bare environments.git
+cd ..
+```
+
+Check out a working copy of your environments
+
+```
+cd src
+git clone ~/r10k-workshop/git/environments.git
+cd environments
+```
+
+Prepare your environment
+
+```
+cat > environment.conf <<EOD
+modulepath = site
+EOD
+git add environment.conf
+git commit -m "Add environment.conf"
+git branch -m production
+git push -u origin production
+```
+
+Create a module
+
+```
+mkdir site
+cd site
+yes '' | puppet module generate weyland/helloworld
+mv weyland-helloworld helloworld
+cat > helloworld/manifests/init.pp <<EOD
+class helloworld {
+  notify { "Hello world!": }
+}
+EOD
+git add helloworld
+git commit -m "Add helloworld module"
+git push
+```
+
+Set up r10k
+
+```
+cd ~/r10k-workshop
+cat > puppet/r10k.yaml <<EOD
+sources:
+  control:
+    basedir: $(pwd)/puppet/r10k-workshop/puppet/environments
+    remote: $(pwd)/git/r10k-workshop/git/environments.git
+EOD
+cd puppet
+mkdir environments
+```
+
+Run r10k to deploy your brand new environment
+
+```
+r10k deploy -c r10k.yaml environment
+```
+
+Inspect your new environment
+
+```
+ls environments/production
+cat environments/production/site/helloworld/manifests/init.pp
+```
