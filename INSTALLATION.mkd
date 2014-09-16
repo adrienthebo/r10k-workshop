@@ -1,0 +1,54 @@
+Installation
+===
+
+Requirements
+---
+
+Operating system:
+
+  * Linux
+    * CentOS 5/RedHat 5 or greater
+    * Ubuntu 10.04/Debian 6 or greater
+  * OSX
+  * Or a VM running one of the above
+
+Software:
+
+  * Ruby 1.8.7+/Rubygems
+  * git
+  * Puppet 3.6+
+
+Installing r10k
+---
+
+### Puppet Enterprise (POSIX)
+
+```
+sudo /opt/puppet/bin/gem install r10k
+/opt/puppet/bin/r10k --version
+```
+
+### Linux
+
+#### Fedora/RedHat/CentOS
+
+CentOS 5/RedHat 5 ship with Ruby 1.8.5. To get a usable version of Ruby you can
+use the Puppet Labs EL repo:
+
+```
+sudo rpm -Uvh http://yum.puppetlabs.com/puppetlabs-release-el-5.noarch.rpm
+```
+
+```
+sudo yum -y install ruby rubygems
+gem install r10k
+r10k --version
+```
+
+#### Debian/Ubuntu
+
+TODO
+
+### OSX
+
+TODO
