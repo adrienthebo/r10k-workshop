@@ -42,8 +42,8 @@ Create a module
 ```
 mkdir site
 cd site
-yes '' | puppet module generate weyland/helloworld
-mv weyland-helloworld helloworld
+yes '' | puppet module generate ashpool/helloworld
+mv ashpool-helloworld helloworld
 cat > helloworld/manifests/init.pp <<EOD
 class helloworld {
   notify { "Hello world!": }
@@ -112,7 +112,7 @@ Create a branch
 
 ```
 cd ~/r10k-workshop/src/environments
-git checkout -b weyland_test
+git checkout -b ashpool_test
 cd site
 cat > helloworld/manifests/init.pp <<EOD
 class helloworld {
@@ -120,23 +120,23 @@ class helloworld {
 }
 EOD
 git add helloworld/manifests/init.pp
-git commit -m "Update helloworld module for weyland test environment"
-git push -u origin weyland_test
+git commit -m "Update helloworld module for ashpool test environment"
+git push -u origin ashpool_test
 ```
 
-Run r10k to deploy the weyland_test environment
+Run r10k to deploy the ashpool_test environment
 
 ```
 cd ~/r10k-workshop/puppet
-r10k deploy -c r10k.yaml environment weyland_test
+r10k deploy -c r10k.yaml environment ashpool_test
 ```
 
 Inspect your new environment
 
 ```
 ls environments
-ls environments/weyland_test
-cat environments/weyland_test/site/helloworld/manifests/init.pp
+ls environments/ashpool_test
+cat environments/ashpool_test/site/helloworld/manifests/init.pp
 ```
 
 Merge that environment into production
@@ -144,7 +144,7 @@ Merge that environment into production
 ```
 cd ~/r10k-workshop/src/environments
 git checkout production
-git merge weyland_test
+git merge ashpool_test
 git push
 ```
 
@@ -165,18 +165,18 @@ Delete the old environment
 
 ```
 cd ~/r10k-workshop/src/environments
-git push origin :weyland_test
-git branch -d weyland_test
+git push origin :ashpool_test
+git branch -d ashpool_test
 ```
 
-Run r10k to clean up the old weyland_test environment
+Run r10k to clean up the old ashpool_test environment
 
 ```
 cd ~/r10k-workshop/puppet
 r10k deploy -c r10k.yaml environment
 ```
 
-Check that the weyland_test environment has been removed
+Check that the ashpool_test environment has been removed
 
 ```
 ls environments
