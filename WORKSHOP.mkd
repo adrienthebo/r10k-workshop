@@ -102,8 +102,8 @@ mkdir environments
 cat > r10k.yaml <<EOD
 sources:
   control:
-    basedir: $(readlink -f ./environments)
-    remote: $(readlink -f ../git/environments.git)
+    basedir: "$(readlink -f ./environments)"
+    remote: "$(readlink -f ../git/environments.git)"
 EOD
 ```
 
