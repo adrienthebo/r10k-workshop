@@ -380,3 +380,26 @@ while for the environment we created an empty repository and then cloned it.
 Since we're using `puppet module generate` to create the module instead of
 creating it from scratch like we did earlier it's easier to do things in this
 order.
+
+### Creating the Puppetfile
+
+Now that we have a standalone module in Git we can add it to our Puppet
+environments via a Puppetfile entry.
+
+```
+cd ~/r10k-workshop
+cat > src/environments/Puppetfile <<EOD
+mod "icebreaker", :git => "$(pwd)/git/tessier-icebreaker.git"
+EOD
+cd src/environments
+git add Puppetfile
+git commit -m "Add icebreaker to Puppetfile"
+git push
+```
+
+### Deploying Puppetfile modules
+
+```
+cd ~/r10k-workshop/puppet
+r10k deploy -c r10k.yaml environment production --puppetfile
+```
