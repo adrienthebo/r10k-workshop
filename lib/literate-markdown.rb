@@ -15,6 +15,8 @@ module Literate
           header(section)
         when :p
           p(section)
+        when :blank
+          section.value
         end
       end.compact.join
     end
@@ -31,9 +33,7 @@ module Literate
 
     def header(element)
       if @text == :keep
-        "#{@comment} h#{element.options[:level]}. " + element.children.first.value + "\n\n"
-      else
-        ''
+        "\n#{@comment} h#{element.options[:level]}. " + element.children.first.value + "\n"
       end
     end
 
@@ -52,7 +52,7 @@ module Literate
         else
           c.value
         end
-      end.join('') + "\n"
+      end.join('')
 
       if istext
         if @text == :keep
