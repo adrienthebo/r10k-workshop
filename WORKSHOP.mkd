@@ -22,7 +22,6 @@ actually deploying our Puppet code.
 mkdir ~/r10k-workshop
 cd ~/r10k-workshop
 mkdir src git puppet
-mkdir puppet/environments
 ```
 
 ### Prepare a git repository for your Puppet environments
@@ -36,7 +35,6 @@ bare git repository that will behave like we're pushing to a remote Git server.
 ```
 cd git
 git init --bare environments.git
-cd ..
 ```
 
 ### Check out a working copy of your environments
@@ -46,7 +44,7 @@ now clone it and start working with it.
 
 
 ```
-cd src
+cd ../src
 git clone ~/r10k-workshop/git/environments.git
 cd environments
 ```
@@ -99,12 +97,13 @@ put it. All this information is kept in `r10k.yaml`, so we'll fill out that
 configuration file and use it from here on out.
 
 ```
-cd ~/r10k-workshop
-cat > puppet/r10k.yaml <<EOD
+cd ~/r10k-workshop/puppet
+mkdir environments
+cat > r10k.yaml <<EOD
 sources:
   control:
-    basedir: $(pwd)/puppet/environments
-    remote: $(pwd)/git/environments.git
+    basedir: $(readlink -f ./environments)
+    remote: $(readlink -f ../git/environments.git)
 EOD
 ```
 
@@ -121,7 +120,6 @@ So r10k is configured and we have our code in Git, all we need to do is actually
 run r10k.
 
 ```
-cd ~/r10k-workshop/puppet
 r10k deploy -c r10k.yaml environment
 ```
 
@@ -387,9 +385,9 @@ Now that we have a standalone module in Git we can add it to our Puppet
 environments via a Puppetfile entry.
 
 ```
-cd ~/r10k-workshop
-cat > src/environments/Puppetfile <<EOD
-mod "icebreaker", :git => "$(pwd)/git/tessier-icebreaker.git"
+cd ~/r10k-workshop/src/environments
+cat > Puppetfile <<EOD
+mod "icebreaker", :git => "$(readlink -f ../../git/tessier-icebreaker.git)"
 EOD
 cd src/environments
 git add Puppetfile
