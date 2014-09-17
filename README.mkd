@@ -1,6 +1,16 @@
 Puppetconf 2014 r10k workshop
 ===
 
+## Deploying environments
+
+We're going to start things off by setting up dynamic environments with r10k.
+The main purpose of r10k is to manage your Puppet environments by mapping the
+branches of a version control repository (usually Git) to Puppet environments.
+In doing so we can take advantage of best practices in code development and get
+all the advantages of version control and apply them to Puppet environments.
+
+Without further ado, let's get started!
+
 ### Set up a working directory
 
 We're going to set up a temporary working directory for this workshop. We'll
@@ -97,6 +107,13 @@ sources:
     remote: $(pwd)/git/environments.git
 EOD
 ```
+
+In real world environments there are Puppet modules to manage your r10k
+configuration, such as zack/r10k (https://github.com/acidprime/r10k) so you
+don't need to manage the configuration of r10k by hand. In this workshop we're
+trying to show how everything fits together and avoid accessing the network, but
+if you're using r10k in a production environment you should consider using a
+Puppet module to manage this configuration.
 
 ### Run r10k to deploy your brand new environment
 
@@ -287,3 +304,60 @@ ls environments
 ```
 
 One environment, just as expected.
+
+## Managing modules in environments
+
+As you manage more systems with Puppet, you'll probably want to start reusing
+existing modules instead of writing your own. Unfortunately trying to
+incorporate external modules into a Git repository have many pitfalls. Git
+subtrees and Git submodules have a large number of pitfalls and can break in
+very strange ways. In addition modules from the Puppet Forge cannot be cleanly
+incorporated into a Git repository without doing a bulk check in of the module.
+To address this problem, r10k supports the concept of a Puppetfile - a version
+control file that specifies a set of external modules that should be installed
+for a given environment.
+
+In this workshop we will not be installing modules from the Puppet Forge, but
+it's as easy to use modules from the Forge as it is to install modules with Git.
+
+### Creating an external module
+
+To begin with, we need an external module that we can incorporate into our
+Puppet environments.
+
+```
+cd ~/r10k-workshop/src
+yes '' | puppet module generate tessier/icebreaker
+mv tessier-icebreaker icebreaker
+cat > icebreaker/manifests/init.pp <<EOD
+class icebreaker {
+  notify { "Hello icebreaker!": }
+}
+EOD
+```
+
+### Version controlling a module with Git
+
+Now that we have our module created, we can version control it with Git.
+
+```
+cd icebreaker
+git add .
+git commit -m "Initial commit of icebreaker module"
+```
+
+We also need to make a remote repository that we can push the module to.
+
+```
+cd ~/r10k-workshop/git
+git init --bare tessier-icebreaker.git
+cd ~/r10k-workshop/src/icebreaker
+git remote add origin ~/r10k-workshop/git/tessier-icebreaker.git
+git push -u origin master
+```
+
+Note that in this example we created the module first and then added it to Git,
+while for the environment we created an empty repository and then cloned it.
+Since we're using `puppet module generate` to create the module instead of
+creating it from scratch like we did earlier it's easier to do things in this
+order.
