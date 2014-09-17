@@ -1,0 +1,17 @@
+Puppetconf r10k workshop README
+===
+
+This is the material used to present the r10k workshop at Puppetconf 2014.
+
+To view the requirements and installation instructions, see
+INSTALLATION.mkd.
+
+To view the workshop walkthrough, see WORKSHOP.mkd
+
+Generating a runnable script
+---
+
+WORKSHOP.mkd can be converted from a markdown file into a runnable script. To
+build the script with Bundler, run `bundle exec bin/knuth.rb WORKSHOP.mkd`. To
+strip the inline text from the script, run `bundle exec bin/knuth.rb
+WORKSHOP.mkd --no-keeptext`.
