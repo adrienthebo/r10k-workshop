@@ -1,13 +1,33 @@
 #!/usr/bin/env ruby
-
 $LOAD_PATH << File.expand_path("../../lib", __FILE__)
-
+require 'optparse'
 require 'literate-markdown'
 
+options = {keeptext: true, comment: '#'}
+op = OptionParser.new do |o|
+  o.banner = "Usage: #{File.basename($0)} file-to-convert.markdown"
+
+  o.on("-k", "--[no-]keeptext", "Keep document text as comments") do |val|
+    options[:keeptext] = val
+  end
+
+  o.on("-c", "--comment SYM", "The symbol used to comment out lines") do |val|
+    options[:comment] = val
+  end
+
+  o.on("-h", "--help", "Display this help") do
+    $stderr.puts op
+    exit 1
+  end
+end
+
+op.parse!
 if ARGV.count != 1
-  $stderr.puts "Usage: #{File.basename($0)} file-to-convert.mkd"
+  $stderr.puts op
   exit 1
 end
 
-doc = Literate::Markdown.new(ARGV[0])
+doc = Literate::Markdown.new(ARGV[0],
+                              keeptext: options[:keeptext],
+                              comment: options[:comment])
 puts doc.code

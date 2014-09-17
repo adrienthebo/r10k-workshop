@@ -2,10 +2,10 @@ require 'kramdown'
 
 module Literate
   class Markdown
-    def initialize(path, comment: '#', text: :keep)
+    def initialize(path, comment: '#', keeptext: true)
       @path = path
       @comment = comment
-      @text = text
+      @keeptext = keeptext
     end
 
     def code
@@ -32,7 +32,7 @@ module Literate
     private
 
     def header(element)
-      if @text == :keep
+      if @keeptext
         "\n#{@comment} h#{element.options[:level]}. " + element.children.first.value + "\n"
       end
     end
@@ -55,7 +55,7 @@ module Literate
       end.join('')
 
       if istext
-        if @text == :keep
+        if @keeptext
           text.gsub(/^/, "#{@comment} ")
         else
           ''
