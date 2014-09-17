@@ -360,6 +360,7 @@ Now that we have our module created, we can version control it with Git.
 
 ```
 cd icebreaker
+git init
 git add .
 git commit -m "Initial commit of icebreaker module"
 ```
