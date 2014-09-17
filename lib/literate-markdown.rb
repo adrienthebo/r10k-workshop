@@ -16,7 +16,7 @@ module Literate
         when :p
           p(section)
         when :blank
-          section.value
+          section.value if @keeptext
         end
       end.compact.join
     end
