@@ -399,7 +399,105 @@ git push
 
 ### Deploying Puppetfile modules
 
+We have an external Puppet module ready to do and it's specified in our
+Puppetfile, so we need to run r10k to deploy it. Since we're deploying an
+environment that has a Puppetfile, we need to add the `--puppetfile` option to
+update the modules specified in the Puppetfile.
+
 ```
 cd ~/r10k-workshop/puppet
 r10k deploy -c r10k.yaml environment production --puppetfile
 ```
+
+Now let's take a look at what was installed.
+
+```
+ls environments/production
+ls environments/production/modules
+cat environments/production/modules/icebreaker/manifests/init.pp
+```
+
+Inside of our environment we now have a `modules` directory, which contains our
+icebreaker module.
+
+### Changing external modules
+
+One of the things that Puppet modules tend to do is change and improve, so we
+need to be able to make changes to our icebreaker module and deploy those to our
+environments.
+
+```
+cd ~/r10k-workshop/src/icebreaker
+cat > manifests/init.pp <<EOD
+class icebreaker {
+  notify { "Hello Dorsett!": }
+}
+EOD
+git add manifests/init.pp
+git commit -m "Update icebreaker notify for Case"
+git push
+```
+
+### Deploying a single module
+
+In our previous example, we were using `r10k deploy environment --puppetfile`
+to update all modules in a given Puppetfile. However if you have a lot of
+modules this can be rather slow. If you want to update a single module you can
+use `r10k deploy module` to update a specific set of modules.
+
+```
+cd ~/r10k-workshop/puppet
+r10k deploy -c r10k.yaml module icebreaker
+cat environments/production/modules/icebreaker/manifests/init.pp
+```
+
+### What gets installed?
+
+When r10k installs Puppet modules from Git, it assumes that it should use the
+latest commit on the 'master' branch. This means that you can make changes to an
+external Puppet module and push changes to your environment without having to
+constantly update Git commits, like how Git submodules work. However this should
+be done for modules that are under development, and modules that are in a final
+state should be pinned to a commit or tag.
+
+Let's run through how pinning a Git module works.
+
+### Tagging a Git module
+
+Before we can pin our icebreaker module, we need a Git ref that we can pin the
+module to. To make things easier for this demo, we'll create a Git tag.
+
+```
+cd ~/r10k-workshop/src/icebreaker
+git tag 0.1.0 HEAD^ -a -m "Initial module release"
+git push --tags
+```
+
+In this case we tagged the commit 'HEAD^', which is the second latest commit.
+We're doing this so that the master branch and the 0.1.0 tag point to different
+commits.
+
+### Updating the Puppetfile with the tag
+
+```
+cd ~/r10k-workshop/src/environments
+cat > Puppetfile <<EOD
+mod "icebreaker", :git => "$(readlink -f ../../git/tessier-icebreaker.git)", :ref => '0.1.0'
+EOD
+git add Puppetfile
+git commit -m "Update Puppetfile for icebreaker 0.1.0"
+git push
+```
+
+### Deploy the tagged module
+
+Since we made a change to the Puppetfile, we have to update both the environment
+and the Puppet module.
+
+```
+cd ~/r10k-workshop/puppet
+r10k deploy -c r10k.yaml environment production --puppetfile
+cat environments/production/modules/icebreaker/manifests/init.pp
+```
+
+And now the icebreaker module has gone from master to the 0.1.0 tag.
