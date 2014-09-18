@@ -13,7 +13,7 @@ Generating a runnable script
 
 WORKSHOP.mkd can be converted from a markdown file into a runnable script based
 on the code sections of the document. To build the script with Bundler, run
-`bundle exec bin/knuth.rb WORKSHOP.mkd`. To strip the inline text from the
-script, run `bundle exec bin/knuth.rb WORKSHOP.mkd --no-keeptext`. Keep in mind
+`bundle exec bin/litmkd WORKSHOP.mkd`. To strip the inline text from the
+script, run `bundle exec bin/litmkd WORKSHOP.mkd --no-keeptext`. Keep in mind
 that running this will run through the demo in about 10 seconds, so it's best to
 use as a reference or to copy commands from instead of directly executing it.

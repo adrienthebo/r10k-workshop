@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# litmkd: A markdown based literate program translator.
+
 $LOAD_PATH << File.expand_path("../../lib", __FILE__)
 require 'optparse'
 require 'literate-markdown'
