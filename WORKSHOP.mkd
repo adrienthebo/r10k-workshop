@@ -129,6 +129,35 @@ trying to show how everything fits together and avoid accessing the network, but
 if you're using r10k in a production environment you should consider using a
 Puppet module to manage this configuration.
 
+### Set up a Puppet master
+
+```
+cat > ~/.puppet/puppet.conf <<EOD
+[agent]
+certname = 'r10k-workshop-agent'
+server   = 'localhost'
+[master]
+certname            = 'r10k-workshop-master'
+dns_alt_names       = localhost
+autosign            = true
+environmentpath     = "$(readlink -f ~/r10k-workshop/puppet/environments)"
+environment_timeout = 0
+file_timeout        = 0
+EOD
+```
+
+### Start the Puppet master
+
+```
+if [ -f ~/.puppet/var/run/master.pid ]; then
+  echo "restarting Puppet master with PID $(cat ~/.puppet/var/run/master.pid)"
+  kill -HUP "$(cat ~/.puppet/var/run/master.pid)"
+else
+  puppet master
+  echo "Puppet master started with PID $(cat ~/.puppet/var/run/master.pid)"
+fi
+```
+
 ### Run r10k to deploy your brand new environment
 
 So r10k is configured and we have our code in Git, all we need to do is actually
@@ -157,6 +186,14 @@ As you can see, we now have a directory called `production` with the contents of
 our `production` branch in our environments directory. `production` is the
 default environment so when Puppet tries to fetch a catalog it will use this
 environment by default.
+
+### Run the agent against the new environment
+
+Let's try using this new environment with `puppet agent`.
+
+```
+puppet agent -t --environment production
+```
 
 ### Make a change to the production environment
 
@@ -190,6 +227,13 @@ contents.
 
 ```
 cat environments/production/site/helloworld/manifests/init.pp
+```
+
+Since 'production' is the default environment, we can call `puppet agent`
+without specifically passing the environment.
+
+```
+puppet agent -t
 ```
 
 ### Create a branch
@@ -245,6 +289,13 @@ cat environments/ashpool_test/site/helloworld/manifests/init.pp
 Huzzah! We now have two environments, each with their own version of the
 `helloworld` module.
 
+We should be able to run `puppet agent` against the new environment and receive
+the updated code.
+
+```
+puppet agent -t --environment ashpool_test
+```
+
 ### Merge ashpool_test
 
 On the 'ashpool_test' environment we made a snazzy change that will
@@ -285,6 +336,7 @@ And inspect:
 
 ```
 cat environments/production/site/helloworld/manifests/init.pp
+puppet agent -t
 ```
 
 Success!
