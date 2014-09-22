@@ -397,6 +397,7 @@ environment.conf.
 cd ~/r10k-workshop/src/environments
 cat > environment.conf <<EOD
 modulepath = site:modules
+manifest   = site.pp
 EOD
 git add environment.conf
 git commit -m "Add modules directory to environment modulepath"
@@ -462,6 +463,25 @@ git commit -m "Add icebreaker to Puppetfile"
 git push
 ```
 
+### Include the module in site.pp
+
+Since we want to include this new module on our nodes, we'll need to update
+site.pp to include the module.
+
+```
+cd ~/r10k-workshop/src/environments
+cat > site.pp <<EOD
+node default {
+  include helloworld
+  include icebreaker
+}
+EOD
+git add site.pp
+git commit -m 'Add icebreaker module to default node'
+git push
+```
+
+
 ### Deploying Puppetfile modules
 
 We have an external Puppet module ready to do and it's specified in our
@@ -484,6 +504,12 @@ cat environments/production/modules/icebreaker/manifests/init.pp
 
 Inside of our environment we now have a `modules` directory, which contains our
 icebreaker module.
+
+We should also be able to run `puppet agent` to run this new module.
+
+```
+puppet agent -t
+```
 
 ### Changing external modules
 
