@@ -61,6 +61,7 @@ push the initial code to our "central" git repository.
 ```
 cat > environment.conf <<EOD
 modulepath = site
+manifest   = site.pp
 EOD
 git add environment.conf
 git commit -m "Add environment.conf"
@@ -86,6 +87,20 @@ class helloworld {
 EOD
 git add helloworld
 git commit -m "Add helloworld module"
+git push
+```
+
+### Include the module in site.pp
+
+```
+cd ~/r10k-workshop/src/environments
+cat > site.pp <<EOD
+node default {
+  include helloworld
+}
+EOD
+git add site.pp
+git commit -m 'Add helloworld module to default node'
 git push
 ```
 
