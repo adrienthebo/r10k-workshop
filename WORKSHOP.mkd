@@ -129,32 +129,13 @@ trying to show how everything fits together and avoid accessing the network, but
 if you're using r10k in a production environment you should consider using a
 Puppet module to manage this configuration.
 
-### Set up a Puppet master
+### Set up Puppet
 
 ```
 cat > ~/.puppet/puppet.conf <<EOD
-[agent]
-certname = 'r10k-workshop-agent'
-server   = 'localhost'
-[master]
-certname            = 'r10k-workshop-master'
-dns_alt_names       = localhost
-autosign            = true
-environmentpath     = "${HOME}/r10k-workshop/puppet/environments"
-environment_timeout = 0
-filetimeout         = 0
+[main]
+environmentpath = "${HOME}/r10k-workshop/puppet/environments"
 EOD
-```
-
-### Start the Puppet master
-
-```
-if [ -f ~/.puppet/var/run/master.pid ]; then
-  echo "Puppet master already running with PID $(cat ~/.puppet/var/run/master.pid)"
-else
-  puppet master
-  echo "Puppet master started with PID $(cat ~/.puppet/var/run/master.pid)"
-fi
 ```
 
 ### Run r10k to deploy your brand new environment
@@ -188,10 +169,10 @@ environment by default.
 
 ### Run the agent against the new environment
 
-Let's try using this new environment with `puppet agent`.
+Let's try using this new environment with `puppet apply`.
 
 ```
-puppet agent -t --environment production
+puppet apply --environment production ~/r10k-workshop/puppet/environments/production/site.pp
 ```
 
 ### Make a change to the production environment
@@ -228,11 +209,11 @@ contents.
 cat environments/production/site/helloworld/manifests/init.pp
 ```
 
-Since 'production' is the default environment, we can call `puppet agent`
+Since 'production' is the default environment, we can call `puppet apply`
 without specifically passing the environment.
 
 ```
-puppet agent -t
+puppet apply ~/r10k-workshop/puppet/environments/production/site.pp
 ```
 
 ### Create a branch
@@ -288,11 +269,11 @@ cat environments/ashpool_test/site/helloworld/manifests/init.pp
 Huzzah! We now have two environments, each with their own version of the
 `helloworld` module.
 
-We should be able to run `puppet agent` against the new environment and receive
+We should be able to run `puppet apply` against the new environment and receive
 the updated code.
 
 ```
-puppet agent -t --environment ashpool_test
+puppet apply --environment ashpool_test ~/r10k-workshop/puppet/environments/production/site.pp
 ```
 
 ### Merge ashpool_test
@@ -335,7 +316,7 @@ And inspect:
 
 ```
 cat environments/production/site/helloworld/manifests/init.pp
-puppet agent -t
+puppet apply ~/r10k-workshop/puppet/environments/production/site.pp
 ```
 
 Success!
@@ -493,10 +474,10 @@ cat environments/production/modules/icebreaker/manifests/init.pp
 Inside of our environment we now have a `modules` directory, which contains our
 icebreaker module.
 
-We should also be able to run `puppet agent` to run this new module.
+We should also be able to run `puppet apply` to run this new module.
 
 ```
-puppet agent -t
+puppet apply ~/r10k-workshop/puppet/environments/production/site.pp
 ```
 
 ### Changing external modules
@@ -584,5 +565,5 @@ And now the icebreaker module has gone from master to the 0.1.0 tag.
 We can run the agent to make sure that the expected module version is used.
 
 ```
-puppet agent -t
+puppet apply ~/r10k-workshop/puppet/environments/production/site.pp
 ```
