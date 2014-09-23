@@ -60,7 +60,7 @@ push the initial code to our "central" git repository.
 
 ```
 cat > environment.conf <<EOD
-modulepath = site
+modulepath = site:modules
 manifest   = site.pp
 EOD
 git add environment.conf
@@ -389,19 +389,9 @@ it's as easy to use modules from the Forge as it is to install modules with Git.
 When r10k installs modules specified in a Puppetfile, it installs them to the
 'modules' directory relative to the Puppetfile. This means that we need to have
 multiple directories for our modules - the site directory where we added the
-helloworld module, and the new modules directory. We can do this by updating
-environment.conf.
-
-```
-cd ~/r10k-workshop/src/environments
-cat > environment.conf <<EOD
-modulepath = site:modules
-manifest   = site.pp
-EOD
-git add environment.conf
-git commit -m "Add modules directory to environment modulepath"
-git push
-```
+helloworld module, and the new modules directory. When we created
+environment.conf earlier we added the 'modules' directory as well as site, so we
+can use it here.
 
 ### Creating an external module
 
