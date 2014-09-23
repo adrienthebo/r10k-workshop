@@ -167,7 +167,7 @@ our `production` branch in our environments directory. `production` is the
 default environment so when Puppet tries to fetch a catalog it will use this
 environment by default.
 
-### Run the agent against the new environment
+### Apply the new puppet code
 
 Let's try using this new environment with `puppet apply`.
 
@@ -562,7 +562,7 @@ cat environments/production/modules/icebreaker/manifests/init.pp
 
 And now the icebreaker module has gone from master to the 0.1.0 tag.
 
-We can run the agent to make sure that the expected module version is used.
+We can run `puppet apply` to make sure that the expected module version is used.
 
 ```
 puppet apply ~/r10k-workshop/puppet/environments/production/site.pp
