@@ -41,14 +41,21 @@ sudo rpm -Uvh http://yum.puppetlabs.com/puppetlabs-release-el-5.noarch.rpm
 
 ```
 sudo yum -y install ruby rubygems
-gem install r10k
+sudo gem install r10k
 r10k --version
 ```
 
 #### Debian/Ubuntu
 
+```
+sudo apt-get install -y ruby-dev rubygems
+sudo gem install r10k
+```
+
 TODO
 
 ### OSX
 
-TODO
+```
+sudo gem install r10k
+```
