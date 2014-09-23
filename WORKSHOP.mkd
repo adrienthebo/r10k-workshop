@@ -150,8 +150,7 @@ EOD
 
 ```
 if [ -f ~/.puppet/var/run/master.pid ]; then
-  echo "restarting Puppet master with PID $(cat ~/.puppet/var/run/master.pid)"
-  kill -HUP "$(cat ~/.puppet/var/run/master.pid)"
+  echo "Puppet master already running with PID $(cat ~/.puppet/var/run/master.pid)"
 else
   puppet master
   echo "Puppet master started with PID $(cat ~/.puppet/var/run/master.pid)"
