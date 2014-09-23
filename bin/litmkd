@@ -5,7 +5,7 @@ $LOAD_PATH << File.expand_path("../../lib", __FILE__)
 require 'optparse'
 require 'literate-markdown'
 
-options = {keeptext: true, comment: '#'}
+options = {:keeptext => true, :comment => '#'}
 op = OptionParser.new do |o|
   o.banner = "Usage: #{File.basename($0)} file-to-convert.markdown"
 
@@ -30,6 +30,6 @@ if ARGV.count != 1
 end
 
 doc = Literate::Markdown.new(ARGV[0],
-                              keeptext: options[:keeptext],
-                              comment: options[:comment])
+                              :keeptext => options[:keeptext],
+                              :comment  => options[:comment])
 puts doc.code

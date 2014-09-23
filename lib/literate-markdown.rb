@@ -2,10 +2,10 @@ require 'kramdown'
 
 module Literate
   class Markdown
-    def initialize(path, comment: '#', keeptext: true)
+    def initialize(path, opts = {:comment => '#', :keeptext => true})
       @path = path
-      @comment = comment
-      @keeptext = keeptext
+      @comment = opts[:comment]
+      @keeptext = opts[:keeptext]
     end
 
     def code
