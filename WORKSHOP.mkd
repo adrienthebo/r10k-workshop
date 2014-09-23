@@ -117,7 +117,7 @@ mkdir environments
 cat > r10k.yaml <<EOD
 sources:
   control:
-    basedir: "${PWD}/./environments"
+    basedir: "${PWD}/environments"
     remote: "${PWD}/../git/environments.git"
 EOD
 ```
