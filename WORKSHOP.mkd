@@ -581,3 +581,9 @@ cat environments/production/modules/icebreaker/manifests/init.pp
 ```
 
 And now the icebreaker module has gone from master to the 0.1.0 tag.
+
+We can run the agent to make sure that the expected module version is used.
+
+```
+puppet agent -t
+```
