@@ -117,8 +117,8 @@ mkdir environments
 cat > r10k.yaml <<EOD
 sources:
   control:
-    basedir: "$(readlink -f ./environments)"
-    remote: "$(readlink -f ../git/environments.git)"
+    basedir: "${PWD}/./environments"
+    remote: "${PWD}/../git/environments.git"
 EOD
 ```
 
@@ -140,7 +140,7 @@ server   = 'localhost'
 certname            = 'r10k-workshop-master'
 dns_alt_names       = localhost
 autosign            = true
-environmentpath     = "$(readlink -f ~/r10k-workshop/puppet/environments)"
+environmentpath     = "${HOME}/r10k-workshop/puppet/environments"
 environment_timeout = 0
 filetimeout         = 0
 EOD
@@ -444,9 +444,8 @@ environments via a Puppetfile entry.
 ```
 cd ~/r10k-workshop/src/environments
 cat > Puppetfile <<EOD
-mod "icebreaker", :git => "$(readlink -f ../../git/tessier-icebreaker.git)"
+mod "icebreaker", :git => "${PWD}/../../git/tessier-icebreaker.git"
 EOD
-cd src/environments
 git add Puppetfile
 git commit -m "Add icebreaker to Puppetfile"
 git push
@@ -562,7 +561,7 @@ commits.
 ```
 cd ~/r10k-workshop/src/environments
 cat > Puppetfile <<EOD
-mod "icebreaker", :git => "$(readlink -f ../../git/tessier-icebreaker.git)", :ref => '0.1.0'
+mod "icebreaker", :git => "${PWD}/../../git/tessier-icebreaker.git", :ref => '0.1.0'
 EOD
 git add Puppetfile
 git commit -m "Update Puppetfile for icebreaker 0.1.0"
